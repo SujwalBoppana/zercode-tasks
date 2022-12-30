@@ -5,6 +5,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Period;
+import java.time.Year;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
@@ -87,6 +89,15 @@ public class DateTask {
 		DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 		LocalDate date = LocalDate.parse(input, dateFormat);
 		return date.minusDays(days).toString();	
+	}
+	public static int subtractDurationToDate(String input,LocalDate curreDate) {
+		if (Utility.isBlank(input)) {
+			return 0;
+		}
+		DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		LocalDate date = LocalDate.parse(input, dateFormat);
+		Period period = Period.between(date, curreDate);
+		return period.getYears();
 	}
 	/**
 	 * this method will converts the given date to string in the specified format

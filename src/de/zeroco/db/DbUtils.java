@@ -8,7 +8,9 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import de.zeroco.util.Utility;
 
@@ -20,65 +22,112 @@ public class DbUtils {
 		String password = "Sujwal@123";
 		
 		Connection connection = getConnection(url, schema, userName, password);
-//		List<String> columns = new ArrayList<>(Arrays.asList("rollno","name","age","gender","email", "phno","subject_code"));
-//		List<String> inputData = new ArrayList<>(Arrays.asList("108","mech","harsha","19","f","harsha@gmail.com", "8307531199"));
-//		List<String> subject = new ArrayList<>(Arrays.asList("branch","subject","subject_code"));
-//		List<String> sub = new ArrayList<>(Arrays.asList("mech","drawing","r1625"));
-		//System.out.println(getData(connection, schema, "student_details","subject_details", columns));
-		List<String> columns = new ArrayList<>(Arrays.asList("rollno","branch", "subject"));
-		List<String> dataTypes = new ArrayList<>(Arrays.asList("VARCHAR(5)", "VARCHAR(20)", "VARCHAR(25)"));
-		List<String> constrains = new ArrayList<>(Arrays.asList("NOT NULL","UNIQUE", "UNIQUE"));
-	//	createTable(connection, schema, "order_details", columns, dataTypes, constrains);
-	//	System.out.println(insertData(connection, schema, "subject_details", subject, sub));
-	//	System.out.println(updateData(connection, schema,"employes" , columns, inputData, "emp_id", "113"));
-	//	System.out.println(insertData(connection, schema, "employes", columns, inputData));
-	//	System.out.println(getData(connection, schema, "student", columns,"age",">","23"));
-		//List<String> ageList = new ArrayList<>(Arrays.asList("21","23"));
-	//	System.out.println(deleteData(connection, schema, "duplicate", "age", "IN", ageList));
-	//	System.out.println(getData(connection, schema, "student", columns));
-		//System.out.println(updateData(connection, schema, "student", columns, inputData, "name"));
-		List<String> secondTableColumns = new ArrayList<>(Arrays.asList("DEPTCODE","DeptName", "LOCATION"));
-		List<String> firstTableColumns = new ArrayList<>(Arrays.asList("salary","Manager", "Job", "HireDate","EmpLName","EmpFName","EmpCode","DEPTCODE","Commission"));
-		List<?> results =  getData(connection, schema, "employee", "department", firstTableColumns, secondTableColumns,"INNER JOIN", "DEPTCODE", "DEPTCODE");
-		for (Object result : results) {
-			System.out.println(result);
-		}
-		System.out.println(getData(connection, schema, "employee", "department", firstTableColumns, secondTableColumns,"INNER JOIN","DEPTCODE", "DEPTCODE"));
+//		System.out.println(insertData(connection, schema, "app_migration", new ArrayList<String>(Arrays.asList("data_set","source_column")), new ArrayList<String>(Arrays.asList("app_role","Himachal Pradesh"))));
+//		List<String> listColumns = new ArrayList<String>(Arrays.asList("target_column","status","failure_reason"));
+//		System.out.println(changeFormat(connection, schema, "app_migration", "source_column",listColumns,"pk_id"));
+//		System.out.println(getData(connection, schema, "app_migration", new ArrayList<String>()));
+	//	createTable(connection, schema, "master_country", Arrays.asList("pk_id","name","code"), Arrays.asList("int","varchar(255)","varchar(255)"), Arrays.asList("PRIMARY KEY","",""));
+	//	System.out.println(changeFormat(connection, schema, "app_migration","data_set","target_column","source_column"));
+//		insertData(connection, schema, "user_details",
+//				Arrays.asList("first_name", "middle_name", "last_name", "gender", "address", "phone", "email",
+//						"userid", "pass"),
+//				Arrays.asList("firstName", "middleName", "lastName", "gender", "address", "phone", "email", "userid", "password"));
+		createTable(connection, schema, "user_details", Arrays.asList("name","phno","email","date_of_birth","age"), Arrays.asList("VARCHAR(255)","VARCHAR(11)","VARCHAR(255)","DATE","INT"), Arrays.asList("","","","",""));
+	//	System.out.println(get(connection, schema, "user_details", Arrays.asList("first_name", "middle_name", "last_name", "gender", "address", "phone", "email",
+	//			"userid", "pass")));
 		getCloseConnection(connection);
 	}
-
-	public static List<?> getData(Connection connection, String schema, String firstTable, String secondTable,
-			List<String> columnsOfFirstTable, List<String> columnsOfSecondTable, String jointType, String tableOneRef,
-			String tableTwoRef) {
-		if (Utility.isBlankWithVarArguments(schema, firstTable))
-			return null;
-		List<Object> list = new ArrayList<>();
+	
+	public static List<Map<String, Object>> get(Connection connection, String schema, String tableName,
+			List<String> columns) {
+		List<Map<String, Object>> result = new ArrayList<>();
 		PreparedStatement statement = null;
 		try {
-			statement = connection.prepareStatement(QueryBuilder.getJoinsQuery(schema, firstTable, secondTable,
-					columnsOfFirstTable, columnsOfSecondTable, jointType, tableOneRef, tableTwoRef));
+			statement = connection.prepareStatement(QueryBuilder.getAllQuery(schema, tableName, columns));
 			ResultSet resultSet = statement.executeQuery();
 			ResultSetMetaData metaData = resultSet.getMetaData();
-			String col = "";
-			int column = 0;
 			while (resultSet.next()) {
 				int count = 1;
-				String temp = "";
-				while (count <= metaData.getColumnCount()) {
-					if (column == 0)
-						col += metaData.getColumnName(count) + " ";
-					temp += resultSet.getObject(count) + " ";
+				int colCount = metaData.getColumnCount();
+				Map<String, Object> data = new LinkedHashMap<>(colCount);
+				while (count <= colCount) {
+					data.put(metaData.getColumnName(count), resultSet.getObject(count));
 					count++;
 				}
-				column++;
-				list.add(temp);
+				result.add(data);
 			}
-			list.add(0, col);
-			return list;
+			return result;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return list;
+		return result;
+	}
+	public static String changeFormat(Connection connection, String schema, String tableName,String dataSet,String targetColumn,String sourceColumn) {
+		List<String> tableNames = new ArrayList<String>();
+		List<String> targetColumns = new ArrayList<String>();
+		List<String> sourceColumns = new ArrayList<String>();
+		PreparedStatement statement = null;
+		PreparedStatement stmt = null;
+		PreparedStatement update = null;
+		int count = 0;
+		try {
+			statement = connection.prepareStatement(QueryBuilder.getAllQuery(schema, tableName, new ArrayList<String>()));
+			ResultSet resultSet = statement.executeQuery();
+			while (resultSet.next()) {
+				tableNames.add(resultSet.getString(dataSet));
+				targetColumns.add(resultSet.getString(targetColumn));
+				sourceColumns.add(resultSet.getString(sourceColumn));
+			}
+			while (count<tableNames.size()) {
+				stmt = connection.prepareStatement(QueryBuilder.getAllQuery(schema, tableNames.get(count), Arrays.asList(sourceColumns.get(count),"pk_id")));
+				update = connection.prepareStatement(QueryBuilder.getUpdateQuery(schema, tableNames.get(count), Arrays.asList(targetColumns.get(count)), "pk_id"));
+				ResultSet result= stmt.executeQuery();
+				while (result.next()) {
+					update.setObject(1, getFormat(result.getString(sourceColumns.get(count))));
+					update.setObject(2, result.getObject("pk_id"));
+					update.executeUpdate();
+				}
+				updateData(connection, schema, tableName, Arrays.asList("status"), Arrays.asList("success",++count), "pk_id");
+			}
+			
+		} catch (Exception e) {
+			updateData(connection, schema, tableName, Arrays.asList("status","failure_reason"), Arrays.asList("failed",e.toString(),++count), "pk_id");
+			System.out.println(e);
+		}
+		return "data updated";
+		
+	}
+	public static String changeFormat(Connection connection, String schema, String tableName, String sourceColumn,
+			List<String> columns, String referenceColmn) throws SQLException {
+		PreparedStatement statement = null;
+		PreparedStatement stmt = null;
+		PreparedStatement expStmt = null;
+		int count = 1;
+		try {
+			statement = connection.prepareStatement(
+					QueryBuilder.getAllQuery(schema, tableName, new ArrayList<String>(Arrays.asList(sourceColumn))));
+			stmt = connection.prepareStatement(QueryBuilder.getUpdateQuery(schema, tableName, columns, referenceColmn));
+			ResultSet resultSet = statement.executeQuery();
+			while (resultSet.next()) {
+				stmt.setObject(1, getFormat(resultSet.getString(sourceColumn)));
+				stmt.setObject(2, "success");
+				stmt.setObject(3, "null");
+				stmt.setObject(4, count);
+				stmt.executeUpdate();
+				count++;
+			}
+		} catch (Exception e) {
+			expStmt = connection.prepareStatement("UPDATE `"+ tableName+"`SET failure_reason = "+ e +" WHERE `pk_id` = "+count+";");
+			expStmt.executeUpdate();
+			e.printStackTrace();
+
+		}
+		return "sucessfully updated";
+	}
+	public static String getFormat(String stateName) {
+		stateName = (stateName.trim()).toLowerCase();
+		stateName = stateName.replaceAll("[^a-zA-Z]+", "_");
+		return stateName.endsWith("_") ? stateName.substring(0, stateName.length() - 1) : stateName;
 	}
 	/**
 	 * This method will creates a table with he given input
@@ -150,12 +199,12 @@ public class DbUtils {
 	 * @param data
 	 * @return status
 	 */
-	public static int insertData(Connection connection,String schema, String tableName,List<String>columns,List<String>inputData ) {
+	public static int insertData(Connection connection,String schema, String tableName,List<String>columns,List<Object>inputData ) {
 		if (Utility.isBlankWithVarArguments(tableName,inputData)) 	return 0;
 		try {
 			PreparedStatement statement = connection.prepareStatement(QueryBuilder.getInsertQuery(schema, tableName, columns),new String[] { "ID" });
 			int count =1;
-			for (String data : inputData) {
+			for (Object data : inputData) {
 				statement.setObject(count, data);
 				count++;
 			}
@@ -183,12 +232,12 @@ public class DbUtils {
 	 * @param referenceData
 	 * @return status 
 	 */
-	public static int updateData(Connection connection, String schema ,String tableName,List<String>columns, List<String> inputData ,String referenceColmn) {
+	public static int updateData(Connection connection, String schema ,String tableName,List<String>columns, List<Object> inputData ,String referenceColmn) {
 		if (Utility.isBlankWithVarArguments(tableName,columns,inputData,referenceColmn)) return 0;
 		try {
 			PreparedStatement statement = connection.prepareStatement(QueryBuilder.getUpdateQuery(schema, tableName, columns, referenceColmn),new String[] { "ID" });
 			int count = 1;
-			for (String data : inputData) {
+			for (Object data : inputData) {
 				statement.setObject(count, data);
 				count++;
 			}
@@ -198,6 +247,8 @@ public class DbUtils {
 		}
 		return 0;
 	}
+
+	
 	
 	/**
 	 * this method will return all the data in the given table
@@ -210,7 +261,7 @@ public class DbUtils {
 	 * @return list
 	 */
 	public static List<?> getData(Connection connection, String schema, String tableName, List<String> columns) {
-		if (Utility.isBlankWithVarArguments(schema, tableName, columns))
+		if (Utility.isBlankWithVarArguments(schema, tableName))
 			return null;
 		return getData(connection, schema, tableName, columns, "ref", "ref", "ref");
 	}
@@ -229,7 +280,7 @@ public class DbUtils {
 	 * @return list
 	 */
 	public static List<?> getData(Connection connection, String schema, String tableName, List<String> columns,String referenceColmn,String operator,String referenceData) {
-		if (Utility.isBlankWithVarArguments(schema, tableName, columns))
+		if (Utility.isBlankWithVarArguments(schema, tableName))
 			return null;
 		List<Object> list = new ArrayList<>();
 		PreparedStatement statement = null;

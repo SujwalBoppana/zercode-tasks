@@ -14,7 +14,7 @@ public class QueryBuilder {
 		String schema = "zerocode";
 		String tableName = "student";
 		System.out.println(getInsertQuery("zerocode", "student", columns));
-//		System.out.println(getUpdateQuery("zerocode", "student", columns, "column"));
+		System.out.println(getUpdateQuery("zerocode", "student", columns, "column"));
 ////		System.out.println(getAllDataQuery("zerocode", "student", columns));
 //		System.out.println(getDataQuery(schema, tableName, columns, "name", "=","name"));
 //		System.out.println(getDeleteQuery("zerocode", "student", "student","IN", columns));
@@ -32,9 +32,9 @@ public class QueryBuilder {
 		// "int","primary key"));
 //			System.out.println(getCrossJoinQuery(schema, "student_details", "subject_details", columns));
 		List<String> secondTableColumns = new ArrayList<>();
-		List<String> firstTableColumns = new ArrayList<>();
-		
-		System.out.println(getJoinsQuery(schema, "employee", "department",  firstTableColumns, secondTableColumns, "LEFT JOIN", "DEPTCODE", "DEPTCODE"));
+		List<String> firstTableColumns = new ArrayList<>(Arrays.asList("data_set","source_column"));
+		System.out.println(getInsertQuery(schema, "app_migration", firstTableColumns));
+		//System.out.println(getJoinsQuery(schema, "employee", "department",  firstTableColumns, secondTableColumns, "LEFT JOIN", "DEPTCODE", "DEPTCODE"));
 	}
 	
 	/**

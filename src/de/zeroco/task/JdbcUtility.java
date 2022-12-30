@@ -284,6 +284,71 @@ public class JdbcUtility {
 		}
 		return list;
 	}
+	//
+//	public static List<?> getData(Connection connection, String schema, String firstTable, String secondTable,
+//			List<String> columnsOfFirstTable, List<String> columnsOfSecondTable, String jointType, String tableOneRef,
+//			String tableTwoRef) {
+//		if (Utility.isBlankWithVarArguments(schema, firstTable))
+//			return null;
+//		List<Object> list = new ArrayList<>();
+//		PreparedStatement statement = null;
+//		try {
+//			statement = connection.prepareStatement(QueryBuilder.getJoinsQuery(schema, firstTable, secondTable,
+//					columnsOfFirstTable, columnsOfSecondTable, jointType, tableOneRef, tableTwoRef));
+//			ResultSet resultSet = statement.executeQuery();
+//			ResultSetMetaData metaData = resultSet.getMetaData();
+//			String col = "";
+//			int column = 0;
+//			while (resultSet.next()) {
+//				int count = 1;
+//				String temp = "";
+//				while (count <= metaData.getColumnCount()) {
+//					if (column == 0)
+//						col += metaData.getColumnName(count) + " ";
+//					temp += resultSet.getObject(count) + " ";
+//					count++;
+//				}
+//				column++;
+//				list.add(temp);
+//			}
+//			list.add(0, col);
+//			return list;
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//		return list;
+//	}
+	
+//	public static List<?> get(Connection connection,String schema,String tableName,String target,String resultTable) {
+//		List<String> columns = new ArrayList<>();
+//		List<String> tempList = new ArrayList<>();
+//		PreparedStatement statement = null;
+//		PreparedStatement stmt = null;
+//		try {
+//			statement = connection.prepareStatement("SELECT " + "`"+target+ "`  FROM `"+schema+"`.`"+tableName+"` ;");
+//			stmt  = connection.prepareStatement("DESC `"+schema+"`.`"+resultTable+"`;");
+//			System.out.println(stmt);
+//			ResultSet resultSet = statement.executeQuery();
+//			ResultSet colSet = stmt.executeQuery();
+//			while (colSet.next()) {
+//				columns.add(colSet.getString(1));
+//			}
+//			while (resultSet.next()) {
+//				tempList.add(0,tableName);
+//				tempList.add(1,getFormat(resultSet.getString(target)));
+//				tempList.add(2,resultSet.getString(target));
+//				tempList.add(3,null);
+//				tempList.add(4,null);
+//				System.out.println(tempList);
+//				insertData(connection, schema, resultTable, columns, tempList);
+//				tempList.clear();
+//			}
+//			return null;
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//		return null;
+//	}
 	public static void main(String[] args) {
 		
 	}
