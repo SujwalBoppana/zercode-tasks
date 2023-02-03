@@ -1,10 +1,6 @@
 package de.zeroco.util;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 public class Temp {
 
@@ -24,14 +20,6 @@ public class Temp {
 	}
 
 	public static void main(String[] args) {
-		Map<String, Double> groceryOne = new TreeMap<String, Double>();
-		System.out.println(Utility.isBlankWithVarArguments(null));
-		System.out.println("helloo");
-//		groceryOne.put("Tomatoes", 10.50);
-//		groceryOne.put("Onions", 4.50);
-//		groceryOne.put("Potatoes", 20.00);
-//		groceryOne.put("Red chills", 1.00);
-//		System.out.println(groceryOne);
-		System.out.println(obj(groceryOne));
+		
 	}
 }

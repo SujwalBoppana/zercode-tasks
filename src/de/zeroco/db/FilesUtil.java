@@ -1,4 +1,4 @@
-package de.zeroco.util;
+package de.zeroco.db;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -134,7 +134,7 @@ public class FilesUtil {
 	 * @return data
 	 * @throws IOException
 	 */
-	public static String [] readData(String fileName)  {
+	public static String  readData(String fileName)  {
 		if (Instance.isBlank(fileName)) {
 			return null;
 		}
@@ -155,7 +155,7 @@ public class FilesUtil {
 				e.printStackTrace();
 			}
 		}
-		return data.split(",");
+		return data;
 	}
 	
 	/**
@@ -256,10 +256,10 @@ public class FilesUtil {
 		return file;
 	}
 	public static void main(String[] args) throws Exception {
-		String [] result = readData("D:\\files\\Tamil Nadu PINCODE.csv");
-		for (String string : result) {
-			System.out.println(string);
-		}
+		String  result = readData("D:\\files\\Master_Pincode_data.csv");
+		
+		
+			System.out.println(result);
 	
 //		System.out.println(getFile("D:\\files\\temp.txt"));
 //		StudentDetails student = new StudentDetails("Name", "RollNo", "EmailId", "Phone Number");
